@@ -67,8 +67,10 @@ while running:
 
     # イベント処理
     for event in pygame.event.get():
-        if event.type == pygame.quit:
+        if event.type == pygame.QUIT:
             running = False
+            # ウィンドウの閉じるボタンが押されたらループを抜ける
+            break
         
         # スペースキーが押されたらターンを進める
         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
