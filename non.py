@@ -413,6 +413,7 @@ while running:
                     if not hero.is_alive():
                         battle_logs.append("勇者は力尽きた...")
                         game_over = True
+                        mode = game_over
                     else:
                         turn = "PLAYER" 
 
@@ -438,9 +439,9 @@ while running:
                 if event.key in [pygame.K_q, pygame.K_ESCAPE]:
                     running = False
 
-    if mode == 'gameover':
-        gameover_text = font.render("GAME OVER", True, RED)
-        screen.blit(gameover_text, (250, 200))
+        if mode == 'gameover':
+            gameover_text = font.render("GAME OVER", True, RED)
+            screen.blit(gameover_text, (250, 200))
         
 
     # --- 描画セクション ---
@@ -486,6 +487,10 @@ while running:
         draw_health_bar(screen, demon, 400, 80)
         draw_xp_bar(screen, hero, 50, 100)
         
+        # 1. 操作ガイド
+        guide_text = font.render("[A]: 攻撃 | [H]: 回復 | [D]: 防御 | [R]: 逃げる", True, BLUE_GUIDE)
+        screen.blit(guide_text, (50, 250))
+        
         # ログウィンドウ
         win_rect = pygame.Rect(50, 300, 540, 150)
         pygame.draw.rect(screen, BLACK, win_rect)
@@ -514,17 +519,6 @@ while running:
     slash_effect.draw(screen)
     slash2_effect.update()
     slash2_effect.draw(screen)
-
-    # 3. 操作ガイド
-    if not game_over and turn == "PLAYER":
-        guide_text = font.render("[A]: 攻撃 | [H]: 回復 | [D]: 防御 | [R]: 逃げる", True, BLUE_GUIDE)
-        screen.blit(guide_text, (50, 400))
-    elif not game_over and turn == "ENEMY":
-        guide_text = font.render("... 魔王の行動中 ...", True, RED)
-        screen.blit(guide_text, (200, 400))
-    # elif game_over:
-    #     guide_text = font.render("ゲーム終了。閉じるボタンで終了してください。", True, WHITE)
-    #     screen.blit(guide_text, (100, 400))
 
     pygame.display.flip()
     clock.tick(30)
