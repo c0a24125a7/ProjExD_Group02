@@ -19,11 +19,6 @@ class Unit:
         self.attack_power = attack
         self.defense_power = defense
         self.is_defending = False 
-        
-        # 状態異常・バフ（今回は使用しませんが、以前追加した構造は残します）
-        self.is_poisoned = False
-        self.poison_turns = 0
-        self.attack_buff_turns = 0
 
     def is_alive(self):
         """生きているかどうかの判定"""
