@@ -21,7 +21,9 @@ def load_sound(file):
     except:
         return None
 
-snd_attack = load_sound("./ccs.wav")
+snd_attack = load_sound("./AT.wav")
+snd_op = load_sound("./op9.wav")
+snd_ccs = load_sound("./ccs.wav")
 
 def play_bgm(file):
     try:
@@ -52,7 +54,7 @@ class Unit:
         damage = max(1, base_damage + variance)
         target.hp = max(0, target.hp - damage)
         
-        if snd_attack:
+        if snd_attack and mode != 'CLEAR':
             snd_attack.play()
 
         if target.is_defending:
@@ -255,7 +257,7 @@ def draw_health_bar(surface: pygame.Surface, unit: Unit, x: int, y: int, bar_wid
 # --- 2. Pygame初期化 ---
 pygame.init()
 screen = pygame.display.set_mode((640, 480))
-pygame.display.set_caption("テキストバトル RPG 統合版")
+pygame.display.set_caption("工科幻戦記")
 
 font_name = pygame.font.match_font('msgothic', 'meiryo', 'yu gothic')
 font = pygame.font.Font(font_name, 20)
@@ -284,7 +286,7 @@ demon_sprite = BattleSprite(enemies[0], 400, 120)  # 敵のインスタンス生
 slash_effect = AttackEffect("images/slash.png", 380, 180)  # 勇者の攻撃エフェクトのインスタンス生成
 slash2_effect = AttackEffect("images/slash2.png", 130, 180)  # 敵の攻撃エフェクトのインスタンス生成
 battle_logs = []
-mode = 'SELECT' # 'SELECT', 'BATTLE', 'CLEAR'
+mode = 'TITLE' # 'TITLE', 'SELECT', 'BATTLE', 'CLEAR'
 turn = "PLAYER"
 
 # 戦闘ログ（画面に表示するテキストのリスト）
@@ -303,7 +305,7 @@ def init_battle(stage_num):
     
     # ステージごとの敵設定
     if stage_num == 1:
-        demon = Unit("スライム", 150, 15, 5)
+        demon = Unit("スライム", 150, 20, 8)
     elif stage_num == 2:
         demon = Unit("ゴブリン", 250, 25, 10)
     elif stage_num == 3:
@@ -317,8 +319,8 @@ def init_battle(stage_num):
     play_bgm("./honey.mp3")
 
 # 初期状態
-play_bgm("./future.mp3")
-battle_logs = ["1-5キーでステージを選択してください。"]
+play_bgm("./pxsrender.mp3")
+battle_logs = ["Enter / Space を押してゲームを開始"]
 
 
 # --- 4. メインループ ---
@@ -332,6 +334,15 @@ while running:
             running = False
         
         if event.type == pygame.KEYDOWN:
+            # --- タイトルモード ---
+            if mode == 'TITLE':
+                if event.key in [pygame.K_RETURN, pygame.K_SPACE]:
+                    mode = 'SELECT'
+                    battle_logs = ["1-5キーでステージを選択してください。"]
+                    play_bgm("./future.mp3")
+                    snd_op.play()
+                elif event.key in [pygame.K_q, pygame.K_ESCAPE]:
+                    running = False
             # --- ステージ選択モード ---
             if mode == 'SELECT':
                 if event.key == pygame.K_1:
@@ -349,7 +360,9 @@ while running:
                 elif event.key == pygame.K_5:
                     init_battle(5)
                     em_num = 4
-                demon_sprite = BattleSprite(enemies[em_num], 400, 120)  # 敵のインスタンス生成
+                # 1-5キーが押された場合のみ敵スプライトを生成する
+                if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5]:
+                    demon_sprite = BattleSprite(enemies[em_num], 400, 120)  # 敵のインスタンス生成
 
 
             # --- バトルモード ---
@@ -374,7 +387,6 @@ while running:
                             battle_logs.extend(xp_messages)
                             if current_stage == 5:
                                     mode = 'CLEAR'
-                                    play_bgm("./ccs.wav")
                             else:
                                 game_over = True # Rで戻るか次への待機
                         else:
@@ -425,6 +437,8 @@ while running:
                     # 敵の攻撃後の勇者の生存判定
                     if not hero.is_alive():
                         battle_logs.append("勇者は力尽きた...")
+                        play_bgm("./silence.mp3")
+                        snd_ccs.play()
                         mode = "gameover"
                     else:
                         turn = "PLAYER" 
@@ -454,11 +468,23 @@ while running:
 
         if mode == 'gameover':
             gameover_text = font.render("GAME OVER", True, RED)
+            go_message = font.render("色は匂えど 散りぬるを", True, WHITE)
             screen.blit(gameover_text, (250, 200))
+            screen.blit(go_message, (200, 280))
         
 
     # --- 描画セクション ---
-    if mode == 'SELECT':
+    if mode == 'TITLE':
+        # タイトル画面（背景を黒にする）
+        screen.fill(BLACK)
+        txt = big_font.render("工科幻戦記", True, GOLD)
+        screen.blit(txt, txt.get_rect(center=(320, 160)))
+        hint = font.render("Enter / Space: スタート  |  Q/Esc: 終了", True, WHITE)
+        message = font.render("There's something in the air.", True, WHITE)
+        if (pygame.time.get_ticks() // 500) % 2 == 0:
+            screen.blit(hint, hint.get_rect(center=(320, 260)))
+        screen.blit(message, message.get_rect(center=(320, 300)))
+    elif mode == 'SELECT':
         title = font.render("【 ステージ選択 】", True, RED)
         screen.blit(title, (20, 20))
         opts = [
@@ -542,7 +568,7 @@ while running:
     clock.tick(30)
     
     if mode == 'gameover':
-        time.sleep(2)
+        time.sleep(5)
         break
 
     
