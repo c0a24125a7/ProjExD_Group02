@@ -47,6 +47,10 @@
 * セーブ
 * 敵ごとの経験値の設定
 
+### お借りしたBGM, SE
+https://web.archive.org/web/20150816095253/http://www.human-park.net/human_music.htm
+https://dova-s.jp/
+https://moerumusic.com/
 
 
 

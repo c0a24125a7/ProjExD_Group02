@@ -387,6 +387,7 @@ while running:
                             battle_logs.extend(xp_messages)
                             if current_stage == 5:
                                     mode = 'CLEAR'
+                                    play_bgm("./loop6.wav")
                             else:
                                 game_over = True # Rで戻るか次への待機
                         else:
