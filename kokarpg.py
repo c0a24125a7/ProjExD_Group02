@@ -482,6 +482,8 @@ while running:
         screen.blit(txt, txt.get_rect(center=(320, 160)))
         hint = font.render("Enter / Space: スタート  |  Q/Esc: 終了", True, WHITE)
         message = font.render("There's something in the air.", True, WHITE)
+        copyright = small_font.render("© TUT", True, WHITE)
+        screen.blit(copyright, (520, 450))
         if (pygame.time.get_ticks() // 500) % 2 == 0:
             screen.blit(hint, hint.get_rect(center=(320, 260)))
         screen.blit(message, message.get_rect(center=(320, 300)))
